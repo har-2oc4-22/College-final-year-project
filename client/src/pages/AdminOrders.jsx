@@ -44,6 +44,8 @@ const AdminOrders = () => {
       toast.success(`🛵 Stage: ${data.currentStage.label}`, {
         style: { background: '#1f2937', color: '#f9fafb' }
       });
+      // Immediately reflect new status in the admin orders table
+      setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: data.order.status } : o));
     } catch (err) {
       toast.error(err.response?.data?.message || 'Cannot advance — order already fully delivered.');
     } finally {
