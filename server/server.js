@@ -23,7 +23,13 @@ const httpServer = http.createServer(app);
 // ─── Socket.io Setup ────────────────────────────────────────────────────────
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: function(origin, callback) {
+      if (!origin) return callback(null, true);
+      if (origin.endsWith('.vercel.app') || origin === 'http://localhost:5173' || origin === process.env.CLIENT_URL) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'), false);
+    },
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -78,7 +84,13 @@ app.use(helmet());
 
 // Enable CORS
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (origin.endsWith('.vercel.app') || origin === 'http://localhost:5173' || origin === process.env.CLIENT_URL) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'), false);
+  },
   credentials: true,
 }));
 
