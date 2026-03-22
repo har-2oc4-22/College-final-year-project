@@ -92,7 +92,8 @@ const LiveTracking = () => {
     setChatMsg('');
   };
 
-  const completedStages = tracking?.deliveryTracking?.length || 0;
+  const completedStages = tracking?.status === 'delivered' ? STAGES.length : (tracking?.deliveryTracking?.length || 0);
+  const percentComplete = tracking?.status === 'delivered' ? 100 : (tracking?.percentComplete || 0);
 
   if (loading) return (
     <div className="max-w-3xl mx-auto px-4 py-20 flex justify-center">
@@ -153,12 +154,12 @@ const LiveTracking = () => {
       <div className="card p-6 mb-6 animate-fadeInUp">
         <div className="flex justify-between items-center mb-3">
           <span className="text-sm text-gray-400 font-medium">Delivery Progress</span>
-          <span className="text-primary-400 font-bold text-sm">{tracking?.percentComplete || 0}%</span>
+          <span className="text-primary-400 font-bold text-sm">{percentComplete}%</span>
         </div>
         <div className="w-full bg-gray-800 rounded-full h-3 mb-6 overflow-hidden">
           <div
             className="h-3 bg-gradient-to-r from-primary-600 to-primary-400 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(34,197,94,0.4)]"
-            style={{ width: `${tracking?.percentComplete || 0}%` }}
+            style={{ width: `${percentComplete}%` }}
           />
         </div>
 
