@@ -109,6 +109,7 @@ app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/wishlist', require('./routes/wishlistRoutes'));
+app.use('/api/pantry', require('./routes/pantryRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/smart-cart', require('./routes/smartListRoutes'));

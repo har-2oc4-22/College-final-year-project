@@ -149,7 +149,7 @@ const AdminOrders = () => {
                       <p className="text-gray-500 text-xs">{order.user?.email}</p>
                     </td>
                     <td className="py-3 px-4 text-gray-300">{order.items?.length || 0} items</td>
-                    <td className="py-3 px-4 text-white font-semibold">₹{order.totalPrice?.toFixed(2)}</td>
+                    <td className="py-3 px-4 text-white font-semibold">₹{(order.totalAmount || order.totalPrice || 0).toFixed(2)}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.status] || 'bg-gray-700 text-gray-300'}`}>
                         {order.status}

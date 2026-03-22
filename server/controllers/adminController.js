@@ -9,12 +9,12 @@ const getDashboardStats = async (req, res) => {
     const [totalUsers, totalProducts, orders] = await Promise.all([
       User.countDocuments(),
       Product.countDocuments(),
-      Order.find().select('totalPrice status createdAt'),
+      Order.find().select('totalAmount status createdAt'),
     ]);
 
     const totalRevenue = orders
       .filter(o => o.status !== 'cancelled')
-      .reduce((acc, o) => acc + o.totalPrice, 0);
+      .reduce((acc, o) => acc + (o.totalAmount || 0), 0);
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -29,7 +29,7 @@ const getDashboardStats = async (req, res) => {
       {
         $group: {
           _id: { $dateToString: { format: "%m-%d", date: "$createdAt" } },
-          revenue: { $sum: "$totalPrice" },
+          revenue: { $sum: "$totalAmount" },
           orders: { $sum: 1 }
         }
       },

@@ -32,7 +32,15 @@ const LiveTracking = () => {
     const fetchTracking = async () => {
       try {
         const { data } = await axios.get(`/tracking/${orderId}`);
-        setTracking(data);
+        // Merge order-level fields with tracking data for easy access
+        setTracking({
+          ...data.order,
+          deliveryTracking: data.deliveryTracking || [],
+          currentStage: data.currentStage,
+          percentComplete: data.percentComplete || 0,
+          deliveryAgent: data.deliveryAgent || data.order?.deliveryAgent,
+          status: data.order?.status,
+        });
       } catch (err) {
         toast.error('Could not load tracking info.');
       } finally {
@@ -91,6 +99,46 @@ const LiveTracking = () => {
       <div className="w-12 h-12 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
     </div>
   );
+
+  // Order pending — admin hasn't approved yet
+  if (tracking?.status === 'pending' || (tracking?.deliveryTracking?.length === 0 && tracking?.status !== 'delivered')) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center animate-fadeInUp">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-white mb-10 transition-colors text-sm">
+          ← Back to My Orders
+        </button>
+        <div className="card p-10 flex flex-col items-center gap-5">
+          <div className="w-20 h-20 bg-yellow-900/30 border border-yellow-700/40 rounded-full flex items-center justify-center text-4xl animate-bounce">
+            🛒
+          </div>
+          <h2 className="text-2xl font-bold text-white">Order Received!</h2>
+          <p className="text-gray-400 text-center max-w-sm">
+            Your order has been placed successfully. Our team is reviewing it and will start preparing it shortly.
+          </p>
+
+          {/* Status steps (static preview) */}
+          <div className="w-full mt-4 space-y-3">
+            {[
+              { icon: '✅', label: 'Order Placed',     done: true  },
+              { icon: '👨‍🍳', label: 'Being Prepared', done: false },
+              { icon: '🛵', label: 'Out for Delivery', done: false },
+              { icon: '🎉', label: 'Delivered',         done: false },
+            ].map(s => (
+              <div key={s.label} className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${
+                s.done ? 'bg-primary-900/20 border-primary-800 text-white' : 'bg-gray-900/40 border-gray-800 text-gray-600'
+              }`}>
+                <span className="text-lg">{s.icon}</span>
+                <span className="font-semibold text-sm">{s.label}</span>
+                {s.done && <span className="ml-auto text-primary-500 text-xs font-bold">✓ Complete</span>}
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-gray-600 mt-2">This page will update automatically when your order is processed.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

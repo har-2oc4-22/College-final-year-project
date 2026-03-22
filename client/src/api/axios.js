@@ -60,4 +60,8 @@ export const generateRecipe = (query) => API.post('/recipes/generate', { query }
 // Chatbot
 export const sendChatMessage = (message) => API.post('/chatbot', { message });
 
+// Pantry
+export const getPantry = () => API.get('/pantry');
+export const consumePantryItem = (itemId) => API.put(`/pantry/${itemId}/consume`);
+
 export default API;

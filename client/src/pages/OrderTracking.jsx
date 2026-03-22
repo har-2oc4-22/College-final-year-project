@@ -112,7 +112,7 @@ const OrderTracking = () => {
         </div>
         <div className="flex items-center justify-between pt-2">
           <span className="text-gray-400 font-medium">Total</span>
-          <span className="text-2xl font-bold text-primary-400">₹{order.totalPrice?.toFixed(2)}</span>
+          <span className="text-2xl font-bold text-primary-400">₹{(order.totalAmount || order.totalPrice || 0).toFixed(2)}</span>
         </div>
         <div className="mt-4 pt-4 border-t border-gray-700">
           <p className="text-sm text-gray-400">Ordered on: <span className="text-white">{new Date(order.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</span></p>

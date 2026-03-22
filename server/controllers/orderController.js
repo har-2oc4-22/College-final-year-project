@@ -1,6 +1,8 @@
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const User = require('../models/User');
+const Pantry = require('../models/Pantry');
+const Product = require('../models/Product');
 const sendEmail = require('../utils/sendEmail');
 const PDFDocument = require('pdfkit');
 
@@ -61,6 +63,42 @@ const checkout = async (req, res, next) => {
         }
       })
     });
+
+    // --- Auto-Add to Digital Pantry ---
+    try {
+      let pantry = await Pantry.findOne({ user: req.user._id });
+      if (!pantry) {
+        pantry = new Pantry({ user: req.user._id, items: [] });
+      }
+
+      const pantryItems = await Promise.all(orderItems.map(async (item) => {
+        const productData = await Product.findById(item.product);
+        let daysTillExpiry = 14; // Default
+        if (productData) {
+          if (['Fruits', 'Vegetables'].includes(productData.category)) daysTillExpiry = 7;
+          else if (['Dairy', 'Meat'].includes(productData.category)) daysTillExpiry = 5;
+          else if (productData.category === 'Bakery') daysTillExpiry = 4;
+          else if (['Pantry', 'Snacks', 'Beverages', 'Frozen'].includes(productData.category)) daysTillExpiry = 180;
+        }
+        
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + daysTillExpiry);
+
+        return {
+          product: item.product,
+          quantity: item.quantity,
+          purchaseDate: new Date(),
+          expiryDate,
+          status: 'Fresh'
+        };
+      }));
+
+      pantry.items.push(...pantryItems);
+      await pantry.save();
+    } catch (err) {
+      console.error('Pantry Error:', err);
+    }
+    // ----------------------------------
 
     // Clear cart after checkout
     cart.items = [];

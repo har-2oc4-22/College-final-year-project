@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { FiShoppingCart, FiUser, FiLogOut, FiLogIn, FiHeart, FiSettings, FiMenu, FiX, FiCamera, FiPackage } from 'react-icons/fi';
+import { FiShoppingCart, FiUser, FiLogOut, FiLogIn, FiHeart, FiSettings, FiMenu, FiX, FiCamera, FiPackage, FiBox } from 'react-icons/fi';
 import { MdStorefront, MdDashboard } from 'react-icons/md';
 
 const Navbar = () => {
@@ -86,6 +86,15 @@ const Navbar = () => {
                   title="My Orders"
                 >
                   <FiPackage size={17} />
+                </Link>
+
+                {/* Digital Pantry */}
+                <Link
+                  to="/pantry"
+                  className="hidden sm:flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-medium py-2 px-3 rounded-xl transition-all duration-200"
+                  title="My Pantry"
+                >
+                  <FiBox size={17} />
                 </Link>
 
                 {/* Cart */}
@@ -173,6 +182,9 @@ const Navbar = () => {
             </Link>
             <Link to="/my-orders" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 p-3 rounded-xl text-gray-300 hover:bg-gray-800">
               <FiPackage size={18} /> My Orders
+            </Link>
+            <Link to="/pantry" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 p-3 rounded-xl text-gray-300 hover:bg-gray-800">
+              <FiBox size={18} /> My Pantry
             </Link>
             <Link to="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 p-3 rounded-xl text-gray-300 hover:bg-gray-800">
               <FiHeart size={18} /> Wishlist

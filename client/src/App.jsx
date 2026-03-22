@@ -23,6 +23,7 @@ import VisualSearch from './pages/VisualSearch';
 import BudgetPlanner from './pages/BudgetPlanner';
 import NutritionDashboard from './pages/NutritionDashboard';
 import LiveTracking from './pages/LiveTracking';
+import Pantry from './pages/Pantry';
 import ChatBot from './components/ChatBot';
 import VoiceAssistant from './components/VoiceAssistant';
 import PrivateRoute from './components/PrivateRoute';
@@ -56,6 +57,7 @@ function App() {
                 <Route path="/nutrition" element={<PrivateRoute><NutritionDashboard /></PrivateRoute>} />
                 <Route path="/orders/:orderId/live-tracking" element={<PrivateRoute><LiveTracking /></PrivateRoute>} />
                 <Route path="/orders/:id/tracking" element={<PrivateRoute><OrderTracking /></PrivateRoute>} />
+                <Route path="/pantry" element={<PrivateRoute><Pantry /></PrivateRoute>} />
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                 <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />

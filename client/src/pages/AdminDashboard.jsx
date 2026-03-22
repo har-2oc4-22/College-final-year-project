@@ -129,7 +129,7 @@ const AdminDashboard = () => {
                   <tr key={order._id} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
                     <td className="py-3 text-gray-400 font-mono text-xs">{order._id.slice(-8).toUpperCase()}</td>
                     <td className="py-3 text-gray-300">{order.user?.name || 'N/A'}</td>
-                    <td className="py-3 text-white font-semibold">₹{order.totalPrice?.toFixed(2)}</td>
+                    <td className="py-3 text-white font-semibold">₹{(order.totalAmount || order.totalPrice || 0).toFixed(2)}</td>
                     <td className="py-3">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.status] || 'bg-gray-700 text-gray-300'}`}>
                         {order.status}
