@@ -1,0 +1,29 @@
+
+> grocery-frontend@0.1.0 build
+> vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 818 modules transformed.
+[31mx[39m Build failed in 2.45s
+[31merror during build:
+[31msrc/pages/AiRecipes.jsx (6:9): "FiChefHat" is not exported by "node_modules/react-icons/fi/index.mjs", imported by "src/pages/AiRecipes.jsx".[31m
+file: [36mC:/Users/harsh/OneDrive/Desktop/College final year project/client/src/pages/AiRecipes.jsx:6:9[31m
+[33m
+4: import { useNavigate } from 'react-router-dom';
+5: import toast from 'react-hot-toast';
+6: import { FiChefHat, FiClock, FiSearch, FiShoppingCart, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+            ^
+7: 
+8: const AiRecipes = () => {
+[31m
+    at getRollupError (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/parseAst.js:402:41)
+    at error (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/parseAst.js:398:42)
+    at Module.error (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/node-entry.js:17040:16)
+    at Module.traceVariable (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/node-entry.js:17452:29)
+    at ModuleScope.findVariable (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/node-entry.js:15070:39)
+    at ReturnValueScope.findVariable (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at FunctionBodyScope.findVariable (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at Identifier.bind (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/node-entry.js:5447:40)
+    at CallExpression.bind (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/node-entry.js:2825:28)
+    at CallExpression.bind (file:///C:/Users/harsh/OneDrive/Desktop/College%20final%20year%20project/client/node_modules/rollup/dist/es/shared/node-entry.js:12179:15)[39m
