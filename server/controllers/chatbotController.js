@@ -72,7 +72,7 @@ const handleChat = async (req, res, next) => {
 
     switch (intent.name) {
       case 'greeting':
-        response = `👋 Hello! Welcome to FreshMart! I can help you find products, explore categories, add items to your cart, or checkout. What are you looking for?`;
+        response = `👋 Hello! Welcome to Grow Carry! I can help you find products, explore categories, add items to your cart, or checkout. What are you looking for?`;
         break;
 
       case 'help':

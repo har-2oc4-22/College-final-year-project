@@ -238,7 +238,7 @@ const LiveTracking = () => {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-500/20 border border-blue-500/30 rounded-full flex items-center justify-center text-lg">🎧</div>
                 <div>
-                  <p className="text-white font-bold">FreshMart Support</p>
+                  <p className="text-white font-bold">Grow Carry Support</p>
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
                     <span className="text-green-400 text-xs font-medium">Online</span>

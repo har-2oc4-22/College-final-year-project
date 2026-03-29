@@ -1,5 +1,5 @@
 /**
- * FreshMart - Live Tracking Demo Script
+ * Grow Carry - Live Tracking Demo Script
  * ======================================
  * Run this AFTER placing an order and being logged in as ADMIN.
  * 
@@ -42,7 +42,7 @@ const advance = async (stage) => {
 };
 
 const runDemo = async () => {
-  console.log('\n🛵 FreshMart Live Tracking Demo Starting...');
+  console.log('\n🛵 Grow Carry Live Tracking Demo Starting...');
   console.log(`📦 Order: ${ORDER_ID}`);
   console.log(`🌐 Watch live at: http://localhost:5173/orders/${ORDER_ID}/live-tracking\n`);
 

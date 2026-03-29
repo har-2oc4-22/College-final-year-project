@@ -25,7 +25,7 @@ const Navbar = () => {
           <Link to="/products" className="flex items-center gap-2 group">
             <MdStorefront size={28} className="text-primary-500 group-hover:text-primary-400 transition-colors" />
             <span className="text-xl font-bold text-white tracking-tight">
-              Fresh<span className="text-primary-500">Mart</span>
+              Grow<span className="text-primary-500">Carry</span>
             </span>
           </Link>
 

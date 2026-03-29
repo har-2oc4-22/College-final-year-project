@@ -1,11 +1,11 @@
-# 📚 FreshMart — Complete Project Documentation
+# 📚 Grow Carry — Complete Project Documentation
 *Structured for Interview Preparation & Revision*
 
 ---
 
 ## 1. Project Overview
-- **What it does:** FreshMart is a full-stack, feature-rich grocery e-commerce application. Users can browse products, manage a smart cart, checkout with multiple payment options (UPI, Cash, Cards), earn loyalty points, track delivery in real-time, and rate products they have purchased.
-- **Problem it solves:** Traditional grocery apps lack post-purchase engagement and environmental awareness. FreshMart introduces a "Digital Pantry" to track goods until they expire (reducing food waste), uses WebSockets for real-time delivery tracking, tracks eco-scores and carbon footprints for environmentally conscious purchasing, and lets users review only products they have genuinely bought and received.
+- **What it does:** Grow Carry is a full-stack, feature-rich grocery e-commerce application. Users can browse products, manage a smart cart, checkout with multiple payment options (UPI, Cash, Cards), earn loyalty points, track delivery in real-time, and rate products they have purchased.
+- **Problem it solves:** Traditional grocery apps lack post-purchase engagement and environmental awareness. Grow Carry introduces a "Digital Pantry" to track goods until they expire (reducing food waste), uses WebSockets for real-time delivery tracking, tracks eco-scores and carbon footprints for environmentally conscious purchasing, and lets users review only products they have genuinely bought and received.
 - **Main objective:** To demonstrate advanced full-stack MERN capabilities including real-time bidirectional communication, complex database aggregations, security protocols, PDF generation, admin product lifecycle management, and smooth UI/UX state management.
 
 ---
@@ -266,11 +266,11 @@ cd client && npm run dev      # → http://localhost:5173
 
 ## 12. Summary (Interview Pitch)
 
-> *"FreshMart is a production-grade MERN e-commerce platform engineered to go beyond standard CRUD. On the backend, I built a secure JWT-authenticated REST API with Socket.io for real-time order tracking, PDFKit for automated invoice generation, and MongoDB aggregation pipelines for 30-day revenue analytics on the admin dashboard.*
+> *"Grow Carry is a production-grade MERN e-commerce platform engineered to go beyond standard CRUD. On the backend, I built a secure JWT-authenticated REST API with Socket.io for real-time order tracking, PDFKit for automated invoice generation, and MongoDB aggregation pipelines for 30-day revenue analytics on the admin dashboard.*
 >
 > *A standout feature is the admin product lifecycle system: admins manage every product attribute — expiry dates, carbon footprint, eco score, nutrition info, and flash sales — through a structured form, and the product table displays colour-coded expiry countdowns. For post-purchase engagement, users can rate products directly from their 'My Orders' page, but only after the order is delivered — enforced by a server-side check against the order history, preventing fake reviews.*
 >
 > *I also engineered a 'Digital Pantry' that hooks into the checkout flow to automatically calculate product shelf-life by category, helping users reduce food waste. The frontend uses React with Tailwind CSS and Context API for cart and auth state, with Axios interceptors injecting JWTs automatically on every request."*
 
 **LinkedIn One-Liner:**
-> FreshMart | Full-Stack MERN Grocery Platform — Built real-time delivery tracking (Socket.io), an admin product lifecycle manager (expiry, carbon, eco, nutrition), post-purchase review enforcement, PDF invoices, and a Digital Pantry auto-assignment system. Deployed on Render + Vercel + MongoDB Atlas.
+> Grow Carry | Full-Stack MERN Grocery Platform — Built real-time delivery tracking (Socket.io), an admin product lifecycle manager (expiry, carbon, eco, nutrition), post-purchase review enforcement, PDF invoices, and a Digital Pantry auto-assignment system. Deployed on Render + Vercel + MongoDB Atlas.

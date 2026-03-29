@@ -12,7 +12,7 @@ const sendEmail = async ({ to, subject, html }) => {
     });
 
     const mailOptions = {
-      from: `"FreshMart" <${process.env.SMTP_FROM || 'noreply@freshmart.com'}>`,
+      from: `"Grow Carry" <${process.env.SMTP_FROM || 'noreply@growcarry.com'}>`,
       to,
       subject,
       html,

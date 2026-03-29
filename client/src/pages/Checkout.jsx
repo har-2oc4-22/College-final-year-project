@@ -89,7 +89,7 @@ const Checkout = () => {
           key: keyId,
           amount,
           currency,
-          name: 'FreshMart',
+          name: 'Grow Carry',
           description: 'Grocery Purchase',
           order_id: id,
           handler: async function (response) {
@@ -359,7 +359,7 @@ const Checkout = () => {
             <div className="bg-white p-4 rounded-2xl w-48 h-48 mx-auto mb-6 flex items-center justify-center">
               {/* Dummy QR Code using a random QR image generator */}
               <img 
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=freshmart@upi&pn=FreshMart&am=${finalTotal.toFixed(0)}&cu=INR`} 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=growcarry@upi&pn=Grow Carry&am=${finalTotal.toFixed(0)}&cu=INR`} 
                 alt="UPI QR Code" 
                 className="w-full h-full"
               />

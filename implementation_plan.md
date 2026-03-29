@@ -1,4 +1,4 @@
-# FreshMart — Implementation Plan (Current State)
+# Grow Carry — Implementation Plan (Current State)
 
 A production-grade full-stack grocery e-commerce app built with MongoDB, Express.js, React (Vite), and Node.js. Features JWT auth, real-time tracking, admin product lifecycle management, post-purchase reviews, AI-powered features, and full deployment on Render + Vercel + MongoDB Atlas.
 

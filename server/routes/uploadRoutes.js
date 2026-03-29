@@ -19,7 +19,7 @@ router.post('/', protect, adminOnly, upload.single('image'), async (req, res) =>
     
     // Upload base64 string
     const result = await cloudinary.uploader.upload(dataURI, {
-      folder: 'freshmart',
+      folder: 'growcarry',
       resource_type: 'auto',
     });
 

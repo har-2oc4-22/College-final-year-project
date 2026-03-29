@@ -86,9 +86,9 @@ const verifyRazorpayPayment = async (req, res) => {
         <h2>Payment Successful</h2>
         <p>Hi ${order.user.name},</p>
         <p>We've received your payment of <strong>₹${order.totalAmount}</strong> for order <strong>#${order._id}</strong>.</p>
-        <p>Thank you for choosing FreshMart! We will notify you when your order ships.</p>
+        <p>Thank you for choosing Grow Carry! We will notify you when your order ships.</p>
       `;
-      sendEmail({ to: order.user.email, subject: 'FreshMart - Payment Successful', html: emailHtml });
+      sendEmail({ to: order.user.email, subject: 'Grow Carry - Payment Successful', html: emailHtml });
 
       res.json({ success: true, message: 'Payment verified successfully', order });
     } else {

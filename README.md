@@ -1,8 +1,8 @@
-# 🛒 FreshMart - NextGen MERN Grocery App
+# 🛒 Grow Carry - NextGen MERN Grocery App
 
-![FreshMart Banner](https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=400&fit=crop)
+![Grow Carry Banner](https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=400&fit=crop)
 
-A modern, full-stack grocery e-commerce platform built with the MERN stack. FreshMart goes beyond traditional shopping by integrating smart features like real-time delivery tracking, digital pantry expiry tracking, loyalty rewards (FreshPoints), and eco-score monitoring.
+A modern, full-stack grocery e-commerce platform built with the MERN stack. Grow Carry goes beyond traditional shopping by integrating smart features like real-time delivery tracking, digital pantry expiry tracking, loyalty rewards (FreshPoints), and eco-score monitoring.
 
 ## 🚀 Key Features
 
@@ -67,7 +67,7 @@ CLIENT_URL=http://localhost:5173
 
 ## 💡 About Building
 
-FreshMart was built specifically for modern grocery needs, showcasing state-of-the-art architectures using WebSockets for real-time interactivity, Aggregation Pipelines for deep analytics, and JWT token-based authentication for robust security.
+Grow Carry was built specifically for modern grocery needs, showcasing state-of-the-art architectures using WebSockets for real-time interactivity, Aggregation Pipelines for deep analytics, and JWT token-based authentication for robust security.
 
 ---
 *Developed by Harsh*

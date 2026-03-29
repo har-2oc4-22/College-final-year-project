@@ -38,7 +38,7 @@ const Login = () => {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-3">
               <MdStorefront size={32} className="text-primary-500" />
-              <span className="text-2xl font-bold">Fresh<span className="text-primary-500">Mart</span></span>
+              <span className="text-2xl font-bold">Grow<span className="text-primary-500">Carry</span></span>
             </div>
             <h1 className="text-xl font-semibold text-white">Welcome back!</h1>
             <p className="text-gray-400 text-sm mt-1">Sign in to your account to continue</p>

@@ -1,4 +1,4 @@
-# 🚀 Deploying FreshMart MERN App
+# 🚀 Deploying Grow Carry MERN App
 
 ## Overview
 - **Database**: MongoDB Atlas (free tier)

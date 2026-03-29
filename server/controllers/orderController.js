@@ -109,11 +109,11 @@ const checkout = async (req, res, next) => {
       const emailHtml = `
         <h2>Order Confirmation</h2>
         <p>Hi ${req.user.name},</p>
-        <p>Thank you for shopping at FreshMart! Your order (<strong>#${order._id}</strong>) has been successfully placed.</p>
+        <p>Thank you for shopping at Grow Carry! Your order (<strong>#${order._id}</strong>) has been successfully placed.</p>
         <p>Total Amount: <strong>₹${order.totalAmount}</strong> (${order.paymentMethod})</p>
         <p>We will notify you when it ships.</p>
       `;
-      sendEmail({ to: req.user.email, subject: 'FreshMart - Order Placed', html: emailHtml });
+      sendEmail({ to: req.user.email, subject: 'Grow Carry - Order Placed', html: emailHtml });
     }
 
     res.status(201).json({ success: true, order });
@@ -166,7 +166,7 @@ const downloadInvoice = async (req, res, next) => {
     
     doc.pipe(res);
 
-    doc.fontSize(20).text('FreshMart', { align: 'center' });
+    doc.fontSize(20).text('Grow Carry', { align: 'center' });
     doc.fontSize(10).text('123 Grocery Lane, Fresh City, 12345', { align: 'center' });
     doc.moveDown();
     
