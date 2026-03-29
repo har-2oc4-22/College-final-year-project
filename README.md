@@ -20,50 +20,6 @@ A modern, full-stack grocery e-commerce platform built with the MERN stack. Grow
 **Backend:** Node.js, Express.js, MongoDB (Mongoose), Socket.io, JWT, PDFKit, JSON2CSV
 **Other:** Razorpay SDK (Payments), Nodemailer (Emails), Express-Rate-Limit (Security)
 
-## 📁 Installation & Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/har-2oc4-22/College-final-year-project.git
-   cd College-final-year-project
-   ```
-
-2. **Setup Environment Variables:**
-   Under `/server`, check the `.env.example` file and create a `.env` file with your MongoDB URI, JWT Secret, and port details.
-
-3. **Install Dependencies:**
-   ```bash
-   # Install Backend Dependencies
-   cd server
-   npm install
-
-   # Install Frontend Dependencies
-   cd ../client
-   npm install
-   ```
-
-4. **Run the Application Locally (Two Terminals):**
-   ```bash
-   # Terminal 1 - Backend
-   cd server
-   npm run dev
-   # Runs on http://localhost:5000
-
-   # Terminal 2 - Frontend
-   cd client
-   npm run dev
-   # Runs on http://localhost:5173
-   ```
-
-## 🔒 Environment Variables Reference (Server)
-
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRE=30d
-CLIENT_URL=http://localhost:5173
-```
 
 ## 💡 About Building
 
