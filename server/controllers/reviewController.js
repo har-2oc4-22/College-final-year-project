@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const Order = require('../models/Order');
 
 // POST /api/products/:id/reviews
 const addReview = async (req, res) => {
@@ -7,6 +8,16 @@ const addReview = async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    // Check if user has bought and received this product
+    const purchasedOrder = await Order.findOne({
+      user: req.user._id,
+      status: 'delivered',
+      'items.product': product._id,
+    });
+    if (!purchasedOrder) {
+      return res.status(403).json({ success: false, message: 'You can only review products you have purchased and received' });
     }
 
     // Check if user already reviewed

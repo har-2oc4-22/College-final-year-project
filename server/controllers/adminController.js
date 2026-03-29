@@ -160,6 +160,28 @@ const updateProduct = async (req, res) => {
   }
 };
 
+// GET /api/admin/products
+const getAdminProducts = async (req, res) => {
+  try {
+    const { page = 1, limit = 20, search } = req.query;
+    const query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { category: { $regex: search, $options: 'i' } },
+      ];
+    }
+    const total = await Product.countDocuments(query);
+    const products = await Product.find(query)
+      .sort('-createdAt')
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+    res.json({ success: true, data: products, total, page: Number(page) });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // DELETE /api/admin/products/:id
 const deleteProduct = async (req, res) => {
   try {
@@ -225,6 +247,7 @@ module.exports = {
   getAllUsers,
   updateUserRole,
   deleteUser,
+  getAdminProducts,
   createProduct,
   updateProduct,
   deleteProduct,

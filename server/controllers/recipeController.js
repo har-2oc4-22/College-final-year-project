@@ -1,14 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Product = require('../models/Product');
 
-let genAI = null;
-try {
-  if (process.env.GEMINI_API_KEY) {
-    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  }
-} catch (err) {
-  console.error('Failed to initialize Google Generative AI:', err);
-}
+// Removed top-level genAI initialization.
 
 // @desc   Generate a recipe and extract grocery ingredients to match DB
 // @route  POST /api/recipes/generate
@@ -21,12 +14,14 @@ const generateRecipe = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide a dish name or recipe idea.' });
     }
 
-    if (!genAI) {
+    if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ 
         success: false, 
         message: 'Gemini AI is not configured. Please set GEMINI_API_KEY in server/.env and restart.' 
       });
     }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
@@ -60,9 +55,16 @@ const generateRecipe = async (req, res, next) => {
 
     let recipeData;
     try {
-      const respText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      let respText = responseText;
+      const jsonMatch = respText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        respText = jsonMatch[0];
+      } else {
+        respText = respText.replace(/```json/g, '').replace(/```/g, '').trim();
+      }
       recipeData = JSON.parse(respText);
     } catch (parseErr) {
+      console.error("AI Parse Error:", parseErr, responseText);
       return res.status(500).json({ success: false, message: 'Failed to parse AI response.', raw: responseText });
     }
 

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import axios, { downloadInvoice } from '../api/axios';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FiDownload, FiPackage, FiClock, FiMapPin } from 'react-icons/fi';
+import { FiDownload, FiPackage, FiClock, FiMapPin, FiStar } from 'react-icons/fi';
+import ReviewModal from '../components/ReviewModal';
 
 const ORDER_STEPS = [
   { key: 'pending',    label: 'Order Placed',    icon: '🛒' },
@@ -39,7 +40,6 @@ const OrderStatusBar = ({ status }) => {
 
         return (
           <div key={step.key} className="flex items-center flex-1 min-w-0">
-            {/* Step circle */}
             <div className="flex flex-col items-center flex-shrink-0">
               <div className={`w-9 h-9 rounded-full border-2 flex items-center justify-center text-sm transition-all duration-500 ${
                 active
@@ -54,7 +54,6 @@ const OrderStatusBar = ({ status }) => {
                 done ? (active ? 'text-primary-400' : 'text-gray-400') : 'text-gray-700'
               }`}>{step.label}</p>
             </div>
-            {/* Connector line */}
             {!isLast && (
               <div className={`flex-1 h-0.5 mx-1 rounded-full transition-all duration-700 ${
                 idx < currentIdx ? 'bg-primary-700' : 'bg-gray-800'
@@ -71,6 +70,10 @@ const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState({});
+  // reviewedItems: Set of "productId" strings the user has already rated this session
+  const [reviewedItems, setReviewedItems] = useState(new Set());
+  // reviewModal: { productId, name, image, qty } or null
+  const [reviewModal, setReviewModal] = useState(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -102,6 +105,10 @@ const MyOrders = () => {
   };
 
   const toggleExpand = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+
+  const handleReviewed = (productId) => {
+    setReviewedItems(prev => new Set([...prev, productId]));
+  };
 
   if (loading) return (
     <div className="max-w-5xl mx-auto px-4 py-20 flex justify-center">
@@ -144,6 +151,9 @@ const MyOrders = () => {
                         ⏳ Waiting for admin approval
                       </span>
                     )}
+                    {order.status === 'delivered' && (
+                      <span className="text-xs text-green-400/80 font-medium">✅ Delivered</span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-500 flex items-center gap-1.5">
                     <FiClock size={13} />
@@ -173,21 +183,48 @@ const MyOrders = () => {
 
                 {expanded[order._id] && (
                   <div className="space-y-2 mb-3">
-                    {order.items?.map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-3 py-2 border-b border-gray-800/50 last:border-0">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-                          onError={e => { e.target.src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=100'; }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white text-sm font-medium truncate">{item.name}</p>
-                          <p className="text-gray-500 text-xs">Qty: {item.quantity} × ₹{item.price}</p>
+                    {order.items?.map((item, idx) => {
+                      const productId = item.product?._id || item.product;
+                      const alreadyReviewed = reviewedItems.has(productId?.toString());
+                      const canReview = order.status === 'delivered' && productId;
+
+                      return (
+                        <div key={idx} className="flex items-center gap-3 py-2.5 px-3 border border-gray-800/60 rounded-xl bg-gray-800/20">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                            onError={e => { e.target.src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=100'; }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm font-medium truncate">{item.name}</p>
+                            <p className="text-gray-500 text-xs">Qty: {item.quantity} × ₹{item.price}</p>
+                          </div>
+                          <p className="text-primary-400 font-bold text-sm mr-2">₹{(item.quantity * item.price).toFixed(0)}</p>
+
+                          {/* Review Button */}
+                          {canReview && (
+                            alreadyReviewed ? (
+                              <span className="flex items-center gap-1 px-3 py-1.5 bg-green-900/20 text-green-400 border border-green-800/50 rounded-lg text-xs font-semibold flex-shrink-0">
+                                ⭐ Reviewed
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => setReviewModal({
+                                  productId: productId?.toString(),
+                                  name: item.name,
+                                  image: item.image,
+                                  qty: item.quantity,
+                                })}
+                                className="flex items-center gap-1 px-3 py-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border border-yellow-600/30 hover:border-yellow-500/50 rounded-lg text-xs font-semibold transition-all flex-shrink-0 active:scale-95"
+                              >
+                                <FiStar size={12} /> Rate
+                              </button>
+                            )
+                          )}
                         </div>
-                        <p className="text-primary-400 font-bold text-sm">₹{(item.quantity * item.price).toFixed(0)}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
 
@@ -200,7 +237,6 @@ const MyOrders = () => {
                     <FiDownload size={15} /> Invoice
                   </button>
 
-                  {/* Track Order — available for all non-cancelled states */}
                   {order.status !== 'cancelled' && (
                     <Link
                       to={`/orders/${order._id}/live-tracking`}
@@ -231,6 +267,15 @@ const MyOrders = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Review Modal */}
+      {reviewModal && (
+        <ReviewModal
+          product={reviewModal}
+          onClose={() => setReviewModal(null)}
+          onReviewed={handleReviewed}
+        />
       )}
     </div>
   );

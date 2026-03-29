@@ -68,6 +68,23 @@ const productSchema = new mongoose.Schema({
     fat: { type: Number, default: 0 },
     fiber: { type: Number, default: 0 }
   },
+  expiryDate: {
+    type: Date,
+    default: null,
+  },
+  carbonFootprint: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  origin: {
+    type: String,
+    default: '',
+  },
+  isOrganic: {
+    type: Boolean,
+    default: false,
+  },
   reviews: [
     {
       user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

@@ -1,12 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Product = require('../models/Product');
 
-let genAI = null;
-try {
-  if (process.env.GEMINI_API_KEY) genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-} catch (err) {
-  console.error('Gemini AI init failed:', err);
-}
+// Removed top-level genAI initialization.
 
 // @desc   Generate an AI-optimized shopping cart within a budget
 // @route  POST /api/budget-planner/optimize
@@ -17,7 +12,10 @@ const optimizeBudget = async (req, res, next) => {
     if (!budget || budget <= 0) {
       return res.status(400).json({ success: false, message: 'A valid budget is required.' });
     }
-    if (!genAI) return res.status(500).json({ success: false, message: 'Gemini AI not configured.' });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ success: false, message: 'Gemini AI not configured.' });
+    }
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     // Load a representative sample of available products from DB
     const allProducts = await Product.find({ stock: { $gt: 0 } })
@@ -59,7 +57,13 @@ Return ONLY a JSON object:
     const result = await model.generateContent(prompt);
     let plan;
     try {
-      const raw = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+      let raw = result.response.text();
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        raw = jsonMatch[0];
+      } else {
+        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+      }
       plan = JSON.parse(raw);
     } catch {
       return res.status(500).json({ success: false, message: 'Failed to parse AI budget plan.' });

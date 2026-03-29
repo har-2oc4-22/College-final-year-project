@@ -8,6 +8,7 @@ const {
   getAllUsers,
   updateUserRole,
   deleteUser,
+  getAdminProducts,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -28,8 +29,10 @@ router.get('/users/export', exportUsersCSV);
 router.put('/users/:id/role', updateUserRole);
 router.delete('/users/:id', deleteUser);
 
+router.get('/products', getAdminProducts);
 router.post('/products', createProduct);
 router.put('/products/:id', updateProduct);
 router.delete('/products/:id', deleteProduct);
 
 module.exports = router;
+

@@ -1,12 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Product = require('../models/Product');
 
-let genAI = null;
-try {
-  if (process.env.GEMINI_API_KEY) genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-} catch (err) {
-  console.error('Gemini AI init failed:', err);
-}
+// Removed top-level genAI initialization.
 
 // @desc   Identify a product from an image and search the store
 // @route  POST /api/visual-search
@@ -15,7 +10,10 @@ const visualSearch = async (req, res, next) => {
   try {
     const { imageBase64 } = req.body;
     if (!imageBase64) return res.status(400).json({ success: false, message: 'No image provided.' });
-    if (!genAI) return res.status(500).json({ success: false, message: 'Gemini AI not configured.' });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ success: false, message: 'Gemini AI not configured.' });
+    }
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
@@ -39,7 +37,13 @@ Return ONLY a JSON object (no markdown, no explanation) with these fields:
 
     let identified;
     try {
-      const raw = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+      let raw = result.response.text();
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        raw = jsonMatch[0];
+      } else {
+        raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+      }
       identified = JSON.parse(raw);
     } catch {
       return res.status(500).json({ success: false, message: 'Failed to parse AI response.' });

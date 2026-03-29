@@ -1,206 +1,197 @@
-# MERN Grocery E-Commerce App — Implementation Plan
+# FreshMart — Implementation Plan (Current State)
 
-A full-stack grocery shopping application built with MongoDB, Express.js, React, and Node.js. Includes JWT authentication, product/cart/order management, AI-lite features (recommendations, auto-cart), a rule-based chatbot, and a complete deployment guide.
-
----
-
-## Proposed Changes
-
-### Backend — `server/`
-
-New Express.js app with clean MVC structure. All routes protected with JWT middleware where needed.
-
-#### [NEW] `server/package.json`
-- Dependencies: `express`, `mongoose`, `jsonwebtoken`, `bcryptjs`, `dotenv`, `cors`, `express-validator`
-
-#### [NEW] `server/.env.example`
-- `PORT`, `MONGO_URI`, `JWT_SECRET`
-
-#### [NEW] `server/server.js`
-- Entry point, mounts all routes, global error handler, CORS config
-
-#### [NEW] `server/config/db.js`
-- Mongoose connection helper
-
-#### [NEW] `server/middleware/auth.js`
-- JWT verification middleware
-
-#### [NEW] `server/middleware/errorHandler.js`
-- Centralized error handler
+A production-grade full-stack grocery e-commerce app built with MongoDB, Express.js, React (Vite), and Node.js. Features JWT auth, real-time tracking, admin product lifecycle management, post-purchase reviews, AI-powered features, and full deployment on Render + Vercel + MongoDB Atlas.
 
 ---
 
-#### Models
+## Backend — `server/`
 
-#### [NEW] `server/models/User.js`
-- Fields: `name`, `email`, `password` (hashed), `createdAt`
-
-#### [NEW] `server/models/Product.js`
-- Fields: `name`, `category`, `price`, `description`, `image`, `stock`, `rating`
-
-#### [NEW] `server/models/Cart.js`
-- Fields: `user` (ref User), `items: [{product, quantity}]`
-
-#### [NEW] `server/models/Order.js`
-- Fields: `user`, `items`, `total`, `status`, `createdAt`
+Clean MVC structure. All state-mutating routes are protected with JWT middleware; admin routes additionally require `adminOnly`.
 
 ---
+
+### Infrastructure
+
+| File | Role |
+|---|---|
+| `server.js` | Entry point — DB connect, middleware stack, all route mounts, Socket.io init |
+| `config/db.js` | Mongoose connection helper |
+| `middleware/auth.js` | `protect` (JWT verify) + `adminOnly` (role gate) |
+| `middleware/errorHandler.js` | Centralised error formatting |
+| `.env` | `PORT`, `MONGO_URI`, `JWT_SECRET`, `CLOUDINARY_*`, `GEMINI_API_KEY` |
+
+---
+
+### Models
+
+#### `models/User.js`
+- `name`, `email`, `password` (bcrypt hashed), `role` (user/admin), `freshPoints`
+
+#### `models/Product.js`
+- **Basic:** `name`, `description`, `price`, `stock`, `unit`, `category`, `image`
+- **Eco & Carbon:** `ecoScore` (0–100), `ecoImpact` (Enum), `carbonFootprint` (kg CO₂), `isOrganic` (Boolean), `origin` (String)
+- **Dates:** `expiryDate` (Date)
+- **Nutrition:** `nutritionInfo { calories, protein, carbs, fat, fiber }`
+- **Flash Sale:** `flashSale { active, discountPercent, salePrice, expiresAt }`
+- **Reviews:** `reviews[]` → `{ user ref, name, rating 1–5, comment, createdAt }`, `rating` (avg), `numReviews`
+
+#### `models/Order.js`
+- `user` ref, `items[]` (product ref, name, image, price, qty), `totalAmount`, `status` (Enum), `paymentMethod`, `isPaid`, `deliveryTracking[]`, `pointsUsed`, `pointsEarned`
+
+#### `models/Cart.js`, `models/Pantry.js`, `models/Coupon.js`, `models/Wishlist.js`
+- Supporting models for respective features
+
+---
+
+### Controllers & Routes
 
 #### Auth
+- `POST /api/auth/register` — hash pw, create user, return JWT
+- `POST /api/auth/login` — validate, return JWT
 
-#### [NEW] `server/controllers/authController.js`
-- `register` — hash password, create user, return JWT
-- `login` — validate credentials, return JWT
+#### Products (Public)
+- `GET /api/products` — search, category filter, price range, sort, pagination
+- `GET /api/products/:id` — single product detail
+- `POST /api/products/:id/reviews` *(Auth + delivered-buyer check)* — add review
+- `GET /api/products/:id/reviews` — read reviews
+- `DELETE /api/products/:id/reviews/:reviewId` *(Auth, own or admin)*
 
-#### [NEW] `server/routes/authRoutes.js`
-- `POST /api/auth/register`
-- `POST /api/auth/login`
+#### Admin — Products *(Admin only)*
+- `GET /api/admin/products` — paginated, searchable full product list
+- `POST /api/admin/products` — create product (all fields)
+- `PUT /api/admin/products/:id` — update any product field
+- `DELETE /api/admin/products/:id` — delete product
 
----
+#### Admin — Orders *(Admin only)*
+- `GET /api/admin/orders` — all orders with pagination + status filter
+- `PUT /api/admin/orders/:id/status` — update status (triggers Socket.io)
+- `GET /api/admin/orders/export` — CSV download
 
-#### Products
+#### Admin — Users *(Admin only)*
+- `GET /api/admin/users` — all users
+- `PUT /api/admin/users/:id/role` — promote/demote
+- `DELETE /api/admin/users/:id`
+- `GET /api/admin/users/export` — CSV download
 
-#### [NEW] `server/controllers/productController.js`
-- `getAllProducts` — filter by category/search
-- `getProductById`
-- `createProduct` (admin-like)
-- `updateProduct`
-- `deleteProduct`
+#### Admin — Dashboard
+- `GET /api/admin/stats` — totals + 30-day revenue via MongoDB `$group` aggregation
 
-#### [NEW] `server/routes/productRoutes.js`
-- `GET /api/products`
-- `GET /api/products/:id`
-- `POST /api/products`
-- `PUT /api/products/:id`
-- `DELETE /api/products/:id`
+#### Orders *(Auth)*
+- `POST /api/orders` — checkout: clear cart, create order, earn points, populate pantry
+- `GET /api/orders` — user's order history
+- `GET /api/orders/:id/invoice` — generate & return PDF (PDFKit)
 
----
+#### Tracking
+- `GET /api/tracking/:orderId`
+- `PUT /api/tracking/:orderId/advance` *(Admin)* — advance stage + `io.to(room).emit()`
 
-#### Cart
+#### Cart, Pantry, Wishlist, Coupons
+- Standard CRUD behind `protect` middleware
 
-#### [NEW] `server/controllers/cartController.js`
-- `getCart` — get user's cart
-- `addToCart` — add or increment item
-- `updateCartItem` — change quantity
-- `removeFromCart` — remove item
-- `clearCart`
+#### AI Features
+- `GET /api/recommendations` — order-history-based product recommendations
+- `GET /api/autocart` — order-frequency-based cart suggestions
+- `POST /api/chatbot` — rule-based intent matching
+- `POST /api/visual-search` — Gemini image recognition
+- `POST /api/recipes` — Gemini recipe suggestions from pantry/cart
+- `POST /api/budget-planner` — nutrition-optimised basket within budget
+- `POST /api/smart-list` — NL grocery list → structured cart items
 
-#### [NEW] `server/routes/cartRoutes.js`
-- All routes protected with auth middleware
-- `GET /api/cart`
-- `POST /api/cart`
-- `PUT /api/cart/:productId`
-- `DELETE /api/cart/:productId`
-
----
-
-#### Orders
-
-#### [NEW] `server/controllers/orderController.js`
-- `checkout` — convert cart to order, clear cart
-- `getOrders` — user's order history
-- `getOrderById`
-
-#### [NEW] `server/routes/orderRoutes.js`
-- `POST /api/orders`
-- `GET /api/orders`
-- `GET /api/orders/:id`
+#### Upload
+- `POST /api/upload` — Multer + Cloudinary image upload, returns public URL
 
 ---
 
-#### Recommendations
+## Frontend — `client/src/`
 
-#### [NEW] `server/controllers/recommendationController.js`
-- Logic: find user's past orders → extract categories → find top products in same categories → sort by order frequency
-- Returns top 5 products
+React + Vite + Tailwind CSS. Dark-mode premium UI.
 
-#### [NEW] `server/routes/recommendationRoutes.js`
-- `GET /api/recommendations`
+### State Management
+- `AuthContext` — JWT, user object, login/logout
+- `CartContext` — cart items, quantities, totals, synced with backend
 
----
+### Pages
 
-#### Auto-Cart
+| Page | Key Behaviour |
+|---|---|
+| `Products.jsx` | Grid + sidebar filters + recommendations + pagination |
+| `Cart.jsx` | Item management, coupon input, points redemption |
+| `Checkout.jsx` | Address, payment method (COD / UPI QR / Razorpay), order place |
+| `MyOrders.jsx` | Status timeline per order. **Delivered orders** show ⭐ Rate button per item → opens ReviewModal. Reviewed items show ✅ badge. |
+| `LiveTracking.jsx` | Socket.io live progress bar |
+| `AdminDashboard.jsx` | Revenue charts (Recharts), KPI cards |
+| `AdminProducts.jsx` | Full CRUD with rich modal form: Basic / Image / Expiry & Origin / Eco & Carbon / Nutrition / Flash Sale sections. Eco score range slider, organic toggle, flash sale live price preview. Table shows expiry countdown (colour-coded), carbon kg, eco badge. |
+| `AdminOrders.jsx` | Status management, approve/advance orders |
+| `AdminUsers.jsx` | Role toggle, delete user |
+| `Pantry.jsx` | Post-purchase item tracker with expiry alerts |
+| `Wishlist.jsx` | Saved items, add-to-cart shortcut |
+| `NutritionDashboard.jsx` | Macro breakdown of cart/pantry |
+| `BudgetPlanner.jsx` | AI budget basket |
+| `AiRecipes.jsx` | Gemini recipe suggestions |
+| `VisualSearch.jsx` | Image upload → product identification |
+| `SmartCart.jsx` | NL shopping list input |
+| `FlashSales.jsx` | Active flash sale products |
 
-#### [NEW] `server/controllers/autocartController.js`
-- Logic: analyze order history → count item frequencies → return top 5-10 most frequently ordered as suggested cart
+### Components
 
-#### [NEW] `server/routes/autocartRoutes.js`
-- `GET /api/autocart`
-
----
-
-#### Chatbot
-
-#### [NEW] `server/controllers/chatbotController.js`
-- Rule-based keyword matching for intents: `search`, `add_to_cart`, `show_category`, `help`, `greeting`, `checkout`
-- Returns JSON `{intent, response, data?}`
-
-#### [NEW] `server/routes/chatbotRoutes.js`
-- `POST /api/chatbot`
-
----
-
-### Frontend — `client/`
-
-React app initialized with Vite + Tailwind CSS. Modern, premium UI with dark-mode-inspired palette.
-
-#### [NEW] `client/` — Vite + React project
-
-#### [NEW] `client/src/api/axios.js`
-- Axios instance with `baseURL` and JWT interceptor
-
-#### [NEW] `client/src/context/AuthContext.jsx`
-- Login/logout state, token storage
-
-#### [NEW] `client/src/context/CartContext.jsx`
-- Cart state synced with backend
-
-#### Pages
-
-#### [NEW] `client/src/pages/Login.jsx`
-#### [NEW] `client/src/pages/Signup.jsx`
-#### [NEW] `client/src/pages/Products.jsx`
-- Product grid with search bar, category filter, recommendation section
-#### [NEW] `client/src/pages/Cart.jsx`
-- Cart item list, quantities, total
-#### [NEW] `client/src/pages/Checkout.jsx`
-- Order summary, place order button
-
-#### Components
-
-#### [NEW] `client/src/components/Navbar.jsx`
-#### [NEW] `client/src/components/ProductCard.jsx`
-#### [NEW] `client/src/components/ChatBot.jsx`
-- Floating chat widget with keyword-based responses
-#### [NEW] `client/src/components/AutoCart.jsx`
-- Displays suggested cart from /api/autocart
-
-#### [NEW] `client/src/App.jsx`
-- React Router DOM setup
+| Component | Purpose |
+|---|---|
+| `Navbar.jsx` | Top nav with cart badge, auth links |
+| `ProductCard.jsx` | Product tile with eco badge, flash sale chip, add-to-cart |
+| `ReviewModal.jsx` | **New** — 5-star interactive rating + comment, submits to `/api/products/:id/reviews`. Shows product preview card. |
+| `AutoCart.jsx` | Suggested reorder items banner |
+| `ChatBot.jsx` | Floating chat widget |
 
 ---
 
-### Deployment Guide
+## Security
 
-#### [NEW] `DEPLOYMENT.md`
-- Step-by-step: MongoDB Atlas → Render (backend) → Vercel (frontend)
+- **JWT** on all state-changing routes; `adminOnly` on all `/api/admin/*` routes
+- **bcryptjs** password hashing
+- **express-rate-limit** — 10 req/15min (prod), 200 req/15min (dev)
+- **Helmet** HTTP headers
+- **XSS-Clean** input sanitisation
+- **Purchase-gated reviews** — server verifies delivered order before accepting review (HTTP 403 otherwise)
 
 ---
 
-## Verification Plan
+## Deployment
 
-### Automated Tests
-No existing test suite. I will seed the DB with sample products on first run and manually verify APIs using the browser + frontend.
+| Layer | Platform |
+|---|---|
+| Database | MongoDB Atlas |
+| Backend | Render (Node.js web service) |
+| Frontend | Vercel (Vite static build) |
 
-### Manual Verification
+```bash
+# Local dev
+cd server && npm run dev      # port 5000
+cd client && npm run dev      # port 5173
 
-1. **Start backend**: `cd server && npm run dev` → confirm `Server running on port 5000`
-2. **Seed products**: Backend includes a seed script: `node seed.js`
-3. **Start frontend**: `cd client && npm run dev` → open `http://localhost:5173`
-4. **Auth flow**: Register a new user → Login → confirm JWT is stored
-5. **Product listing**: Products page loads with grid + search works
-6. **Cart**: Add product → go to Cart page → update quantity → remove item
-7. **Checkout**: Place order → confirm order saved
-8. **Recommendations**: `/api/recommendations` returns ≤5 products after order history exists
-9. **Auto-cart**: `/api/autocart` returns suggested items
-10. **Chatbot**: Type "show fruits" in chat widget → confirm filtered response
+# Seed data
+cd server && node seederItems.js
+```
+
+---
+
+## Verification Checklist
+
+| # | Test |
+|---|---|
+| 1 | Register → Login → JWT stored in localStorage |
+| 2 | Products page loads with grid, search, filters, pagination |
+| 3 | Add to cart → update qty → remove → clear |
+| 4 | Checkout (COD) → order created → pantry auto-populated |
+| 5 | Admin: Create product with all fields (expiry, carbon, eco, nutrition, flash sale) |
+| 6 | Admin: Edit product → values pre-fill → update persists |
+| 7 | Admin: Delete product → removed from listing |
+| 8 | Admin: Advance order status → user's live tracking updates via Socket.io |
+| 9 | User: Open delivered order → expand items → click ⭐ Rate → modal opens |
+| 10 | Submit review → toast success → button → "✅ Reviewed" |
+| 11 | Attempt review on non-delivered order → blocked (no button shown) |
+| 12 | Attempt duplicate review → server returns 400 |
+| 13 | Non-buyer attempt review via API → server returns 403 |
+| 14 | Invoice PDF download from My Orders |
+| 15 | CSV export from Admin Orders / Users |
+| 16 | Visual search → product identified |
+| 17 | Budget planner → basket within budget returned |
