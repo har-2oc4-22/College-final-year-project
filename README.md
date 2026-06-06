@@ -1,4 +1,4 @@
-# 🛒 Grow Carry - NextGen MERN Grocery App
+# 🛒 Grow Carry 
 
 ![Grow Carry Banner](https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=400&fit=crop)
 
